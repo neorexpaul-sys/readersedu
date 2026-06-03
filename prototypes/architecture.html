@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>readersedu.app — Global B2C Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #020617;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 32px;
+  max-width: 1100px;
+  width: 100%;
+}
+header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #f0d078;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+header .subtitle {
+  font-size: 0.85rem;
+  color: #8890b0;
+  margin-top: 6px;
+  font-weight: 400;
+}
+.status-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #3dd6c8;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px #3dd6c8; }
+  50% { opacity: 0.5; box-shadow: 0 0 20px #3dd6c8; }
+}
+
+/* Diagram Container */
+.diagram-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 1100px;
+  width: 100%;
+  overflow-x: auto;
+}
+.diagram-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Info Cards */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  width: 100%;
+  margin-top: 24px;
+}
+.info-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+}
+.info-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-card .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot.gold { background: #d4a843; }
+.dot.teal { background: #3dd6c8; }
+.dot.purple { background: #7c5ce7; }
+.dot.coral { background: #f06b5e; }
+.dot.orange { background: #f7931e; }
+.info-card ul { list-style: none; font-size: 0.78rem; color: #94a3b8; line-height: 1.8; }
+.info-card ul li::before { content: '• '; color: inherit; }
+
+/* Legend */
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-swatch {
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span class="status-dot"></span> readersedu.app
+    <span style="font-weight:400;color:#94a3b8;font-size:1rem">Global B2C Architecture</span>
+  </h1>
+  <div class="subtitle">UX Flow · Gamification Loop · Monetization — English-first, i18n-ready, 8–14 age target</div>
+</header>
+
+<div class="diagram-card">
+<svg viewBox="0 0 1060 920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
+
+    <!-- Arrowhead -->
+    <marker id="arrowGold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#d4a843"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#3dd6c8"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#7c5ce7"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#f7931e"/>
+    </marker>
+    <marker id="arrowCoral" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#f06b5e"/>
+    </marker>
+    <marker id="arrowWhite" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 L2,3 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background Grid -->
+  <rect width="1060" height="920" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- ===== TITLE ===== -->
+  <text x="30" y="36" font-family="Space Grotesk, sans-serif" font-size="16" fill="#f0d078" font-weight="700">UX Flow &amp; Gamification Architecture</text>
+  <text x="30" y="56" font-family="Inter, sans-serif" font-size="11" fill="#64748b">Onboarding → Daily Loop → Progression → Monetization</text>
+
+  <!-- ===== SECTION 1: ONBOARDING (y=70~250) ===== -->
+  <!-- Boundary -->
+  <rect x="20" y="70" width="1020" height="170" rx="12" fill="none" stroke="#d4a843" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="35" y="92" font-family="Space Grotesk, sans-serif" font-size="11" fill="#d4a843" font-weight="600" letter-spacing="1">ONBOARDING — First 60 Seconds</text>
+
+  <!-- Step 1: Egg Arrival -->
+  <rect x="40" y="105" width="155" height="55" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="1.5"/>
+  <rect x="40" y="105" width="155" height="55" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <text x="117" y="128" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="11" fill="#f0d078" font-weight="600">🌟 Egg Arrives</text>
+  <text x="117" y="146" text-anchor="middle" font-size="8.5" fill="#94a3b8">Shooting star → egg</text>
+
+  <!-- Arrow -->
+  <line x1="195" y1="132" x2="235" y2="132" stroke="#d4a843" stroke-width="1.2" marker-end="url(#arrowGold)"/>
+
+  <!-- Step 2: Tap Egg -->
+  <rect x="240" y="105" width="155" height="55" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="1.5"/>
+  <rect x="240" y="105" width="155" height="55" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <text x="317" y="128" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="11" fill="#f0d078" font-weight="600">👆 Tap the Egg</text>
+  <text x="317" y="146" text-anchor="middle" font-size="8.5" fill="#94a3b8">Haptic feedback</text>
+
+  <!-- Arrow -->
+  <line x1="395" y1="132" x2="435" y2="132" stroke="#d4a843" stroke-width="1.2" marker-end="url(#arrowGold)"/>
+
+  <!-- Step 3: 3 Challenges -->
+  <rect x="440" y="100" width="175" height="65" rx="6" fill="#0f172a" stroke="#3dd6c8" stroke-width="1.5"/>
+  <rect x="440" y="100" width="175" height="65" rx="6" fill="rgba(61,214,200,0.08)"/>
+  <text x="527" y="123" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="11" fill="#3dd6c8" font-weight="600">🧩 3 Math Challenges</text>
+  <text x="527" y="140" text-anchor="middle" font-size="8" fill="#94a3b8">Pattern · Balance · Shape</text>
+  <text x="527" y="154" text-anchor="middle" font-size="8" fill="#64748b">(No tests — playful puzzles)</text>
+
+  <!-- Arrow -->
+  <line x1="615" y1="132" x2="655" y2="132" stroke="#3dd6c8" stroke-width="1.2" marker-end="url(#arrowTeal)"/>
+
+  <!-- Step 4: Pet Hatches -->
+  <rect x="660" y="100" width="175" height="65" rx="6" fill="#0f172a" stroke="#7c5ce7" stroke-width="1.5"/>
+  <rect x="660" y="100" width="175" height="65" rx="6" fill="rgba(124,92,231,0.12)"/>
+  <text x="747" y="123" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="11" fill="#7c5ce7" font-weight="600">🐉 Pet Hatches!</text>
+  <text x="747" y="140" text-anchor="middle" font-size="8" fill="#94a3b8">Answer pattern → pet type</text>
+  <text x="747" y="154" text-anchor="middle" font-size="8" fill="#64748b">5 types: Hex/Flux/Terra/Nova/Echo</text>
+
+  <!-- Arrow down -->
+  <line x1="747" y1="165" x2="747" y2="195" stroke="#7c5ce7" stroke-width="1.2" marker-end="url(#arrowPurple)"/>
+
+  <!-- Step 5: Name Pet + Enter Garden -->
+  <rect x="610" y="195" width="275" height="40" rx="6" fill="#0f172a" stroke="#7c5ce7" stroke-width="1.2" stroke-dasharray="4,2"/>
+  <rect x="610" y="195" width="275" height="40" rx="6" fill="rgba(124,92,231,0.06)"/>
+  <text x="747" y="218" text-anchor="middle" font-size="10" fill="#a78bfa">✏️ Name your pet → 🏡 Enter Garden → 🌰 Plant first seed</text>
+  <text x="747" y="232" text-anchor="middle" font-size="8" fill="#64748b">Ownership established · Session complete in 60s</text>
+
+  <!-- ===== SECTION 2: DAILY LOOP (y=260~480) ===== -->
+  <rect x="20" y="260" width="1020" height="210" rx="12" fill="none" stroke="#3dd6c8" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="35" y="282" font-family="Space Grotesk, sans-serif" font-size="11" fill="#3dd6c8" font-weight="600" letter-spacing="1">DAILY ENGAGEMENT LOOP — "Come Back Every Day"</text>
+
+  <!-- Push Notification -->
+  <rect x="40" y="298" width="170" height="50" rx="6" fill="#0f172a" stroke="#f7931e" stroke-width="1.5"/>
+  <rect x="40" y="298" width="170" height="50" rx="6" fill="rgba(247,147,30,0.08)"/>
+  <text x="125" y="319" text-anchor="middle" font-size="9.5" fill="#f7931e" font-weight="600">🔔 Push Notification</text>
+  <text x="125" y="336" text-anchor="middle" font-size="8" fill="#94a3b8">"Hex is hungry for math!"</text>
+
+  <line x1="210" y1="323" x2="250" y2="323" stroke="#f7931e" stroke-width="1.2" marker-end="url(#arrowOrange)"/>
+
+  <!-- Open App -->
+  <rect x="255" y="298" width="160" height="50" rx="6" fill="#0f172a" stroke="#f7931e" stroke-width="1.5"/>
+  <rect x="255" y="298" width="160" height="50" rx="6" fill="rgba(247,147,30,0.08)"/>
+  <text x="335" y="319" text-anchor="middle" font-size="9.5" fill="#f7931e" font-weight="600">📱 Open App</text>
+  <text x="335" y="336" text-anchor="middle" font-size="8" fill="#94a3b8">Pet welcome animation</text>
+
+  <line x1="415" y1="323" x2="455" y2="323" stroke="#f7931e" stroke-width="1.2" marker-end="url(#arrowOrange)"/>
+
+  <!-- Daily Challenge -->
+  <rect x="460" y="293" width="185" height="60" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="1.5"/>
+  <rect x="460" y="293" width="185" height="60" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <text x="552" y="314" text-anchor="middle" font-size="10.5" fill="#f0d078" font-weight="600">⚡ Daily Challenge</text>
+  <text x="552" y="330" text-anchor="middle" font-size="8" fill="#94a3b8">3 problems · 5 min · adaptive</text>
+  <text x="552" y="344" text-anchor="middle" font-size="8" fill="#64748b">+25 XP · Streak +1 · Waters garden</text>
+
+  <line x1="645" y1="323" x2="685" y2="323" stroke="#d4a843" stroke-width="1.2" marker-end="url(#arrowGold)"/>
+
+  <!-- Rewards -->
+  <rect x="690" y="293" width="170" height="60" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="1.5"/>
+  <rect x="690" y="293" width="170" height="60" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <text x="775" y="314" text-anchor="middle" font-size="10.5" fill="#f0d078" font-weight="600">🎁 Rewards</text>
+  <text x="775" y="330" text-anchor="middle" font-size="8" fill="#94a3b8">XP · Garden Water · Gems</text>
+  <text x="775" y="344" text-anchor="middle" font-size="8" fill="#64748b">Streak count + badge</text>
+
+  <!-- Loop back arrow -->
+  <path d="M860,323 C900,323 920,350 920,380 C920,410 900,430 880,430 L180,430 C160,430 140,420 140,390 L140,360" fill="none" stroke="#f7931e" stroke-width="1" stroke-dasharray="4,3" opacity="0.5" marker-end="url(#arrowOrange)"/>
+  <text x="530" y="458" text-anchor="middle" font-size="8" fill="#64748b">Next day: energy reset + new challenge</text>
+
+  <!-- Sub-components below daily loop -->
+  <!-- Streak -->
+  <rect x="40" y="400" width="150" height="45" rx="6" fill="#0f172a" stroke="#f7931e" stroke-width="1" opacity="0.7"/>
+  <rect x="40" y="400" width="150" height="45" rx="6" fill="rgba(247,147,30,0.06)"/>
+  <text x="115" y="419" text-anchor="middle" font-size="9" fill="#f7931e" font-weight="600">🔥 Streak System</text>
+  <text x="115" y="436" text-anchor="middle" font-size="7.5" fill="#94a3b8">3-day recovery grace</text>
+
+  <!-- Pet Energy -->
+  <rect x="210" y="400" width="155" height="45" rx="6" fill="#0f172a" stroke="#3dd6c8" stroke-width="1" opacity="0.7"/>
+  <rect x="210" y="400" width="155" height="45" rx="6" fill="rgba(61,214,200,0.06)"/>
+  <text x="287" y="419" text-anchor="middle" font-size="9" fill="#3dd6c8" font-weight="600">⚡ Pet Energy 100/100</text>
+  <text x="287" y="436" text-anchor="middle" font-size="7.5" fill="#94a3b8">Depletes with activity</text>
+
+  <!-- Weekly Quest -->
+  <rect x="385" y="400" width="165" height="45" rx="6" fill="#0f172a" stroke="#7c5ce7" stroke-width="1" opacity="0.7"/>
+  <rect x="385" y="400" width="165" height="45" rx="6" fill="rgba(124,92,231,0.06)"/>
+  <text x="467" y="419" text-anchor="middle" font-size="9" fill="#7c5ce7" font-weight="600">🌍 Weekly Global Quest</text>
+  <text x="467" y="436" text-anchor="middle" font-size="7.5" fill="#94a3b8">Cooperative milestone</text>
+
+  <!-- Math Detective -->
+  <rect x="570" y="400" width="170" height="45" rx="6" fill="#0f172a" stroke="#f06b5e" stroke-width="1" opacity="0.7"/>
+  <rect x="570" y="400" width="170" height="45" rx="6" fill="rgba(240,107,94,0.06)"/>
+  <text x="655" y="419" text-anchor="middle" font-size="9" fill="#f06b5e" font-weight="600">🔍 Math Detective</text>
+  <text x="655" y="436" text-anchor="middle" font-size="7.5" fill="#94a3b8">Mystery narrative mode</text>
+
+  <!-- Duo Mode -->
+  <rect x="760" y="400" width="155" height="45" rx="6" fill="#0f172a" stroke="#3dd6c8" stroke-width="1" opacity="0.7"/>
+  <rect x="760" y="400" width="155" height="45" rx="6" fill="rgba(61,214,200,0.06)"/>
+  <text x="837" y="419" text-anchor="middle" font-size="9" fill="#3dd6c8" font-weight="600">👥 Duo Mode</text>
+  <text x="837" y="436" text-anchor="middle" font-size="7.5" fill="#94a3b8">Cooperative solving</text>
+
+  <!-- ===== SECTION 3: PROGRESSION (y=490~700) ===== -->
+  <rect x="20" y="490" width="1020" height="200" rx="12" fill="none" stroke="#7c5ce7" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="35" y="512" font-family="Space Grotesk, sans-serif" font-size="11" fill="#7c5ce7" font-weight="600" letter-spacing="1">PROGRESSION SYSTEMS — Long-Term Motivation</text>
+
+  <!-- Pet Evolution -->
+  <rect x="40" y="530" width="220" height="70" rx="6" fill="#0f172a" stroke="#7c5ce7" stroke-width="1.5"/>
+  <rect x="40" y="530" width="220" height="70" rx="6" fill="rgba(124,92,231,0.08)"/>
+  <text x="150" y="550" text-anchor="middle" font-size="10.5" fill="#7c5ce7" font-weight="600">🐾 Pet Evolution</text>
+  <text x="150" y="567" text-anchor="middle" font-size="8" fill="#94a3b8">🥚 Egg → 🐣 Hatchling → 🦉 Adult → ✨ Legendary</text>
+  <text x="150" y="583" text-anchor="middle" font-size="7.5" fill="#64748b">0 / 100 / 300 / 600 XP · 5 types · Rare skins</text>
+  <text x="150" y="596" text-anchor="middle" font-size="7.5" fill="#64748b">Seasonal limited editions (🎃🎄🌸)</text>
+
+  <!-- Garden Growth -->
+  <rect x="280" y="530" width="220" height="70" rx="6" fill="#0f172a" stroke="#3dd6c8" stroke-width="1.5"/>
+  <rect x="280" y="530" width="220" height="70" rx="6" fill="rgba(61,214,200,0.08)"/>
+  <text x="390" y="550" text-anchor="middle" font-size="10.5" fill="#3dd6c8" font-weight="600">🏡 Thought Garden</text>
+  <text x="390" y="567" text-anchor="middle" font-size="8" fill="#94a3b8">🌰 → 🌱 → 🌿 → 🌳 (4 stages × 6 plants)</text>
+  <text x="390" y="583" text-anchor="middle" font-size="7.5" fill="#64748b">Free: 6 plots · Premium: 12 plots + themes</text>
+  <text x="390" y="596" text-anchor="middle" font-size="7.5" fill="#64748b">Water = practice · Sun = questions · Fertilizer = mistakes</text>
+
+  <!-- Math Abilities -->
+  <rect x="520" y="530" width="220" height="70" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="1.5"/>
+  <rect x="520" y="530" width="220" height="70" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <text x="630" y="550" text-anchor="middle" font-size="10.5" fill="#f0d078" font-weight="600">📊 6 Math Abilities</text>
+  <text x="630" y="567" text-anchor="middle" font-size="8" fill="#94a3b8">Analysis · Intuition · Persistence</text>
+  <text x="630" y="583" text-anchor="middle" font-size="8" fill="#94a3b8">Creativity · Explanation · Recovery</text>
+  <text x="630" y="596" text-anchor="middle" font-size="7.5" fill="#64748b">Radar chart · Weekly report · Growth timeline</text>
+
+  <!-- Detective Rank -->
+  <rect x="760" y="530" width="220" height="70" rx="6" fill="#0f172a" stroke="#f06b5e" stroke-width="1.5"/>
+  <rect x="760" y="530" width="220" height="70" rx="6" fill="rgba(240,107,94,0.08)"/>
+  <text x="870" y="550" text-anchor="middle" font-size="10.5" fill="#f06b5e" font-weight="600">🔍 Detective Ranks</text>
+  <text x="870" y="567" text-anchor="middle" font-size="8" fill="#94a3b8">Apprentice → Junior → Senior → Master</text>
+  <text x="870" y="583" text-anchor="middle" font-size="7.5" fill="#64748b">Wrong answers = crime scene clues</text>
+  <text x="870" y="596" text-anchor="middle" font-size="7.5" fill="#64748b">Solve cases to rank up</text>
+
+  <!-- ===== SECTION 4: MONETIZATION (y=710~880) ===== -->
+  <rect x="20" y="710" width="1020" height="160" rx="12" fill="none" stroke="#d4a843" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="35" y="732" font-family="Space Grotesk, sans-serif" font-size="11" fill="#d4a843" font-weight="600" letter-spacing="1">MONETIZATION — Freemium + In-App Purchases</text>
+
+  <!-- Free Tier -->
+  <rect x="40" y="748" width="310" height="105" rx="6" fill="#0f172a" stroke="#3dd6c8" stroke-width="1.5"/>
+  <rect x="40" y="748" width="310" height="105" rx="6" fill="rgba(61,214,200,0.05)"/>
+  <text x="195" y="770" text-anchor="middle" font-size="11" fill="#3dd6c8" font-weight="600">🆓 Free Tier</text>
+  <text x="195" y="790" text-anchor="middle" font-size="8.5" fill="#94a3b8">2 pets · 3 daily challenges · 6 garden plots</text>
+  <text x="195" y="808" text-anchor="middle" font-size="8.5" fill="#94a3b8">1 weekly detective case · 1 daily duo mode</text>
+  <text x="195" y="826" text-anchor="middle" font-size="8.5" fill="#94a3b8">3 AI hints/day · Weekly report · No ads</text>
+  <text x="195" y="844" text-anchor="middle" font-size="8" fill="#64748b">Earn Gems through gameplay (slow)</text>
+
+  <!-- Arrow -->
+  <line x1="350" y1="800" x2="395" y2="800" stroke="#d4a843" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+
+  <!-- Premium Tier -->
+  <rect x="400" y="748" width="310" height="105" rx="6" fill="#0f172a" stroke="#d4a843" stroke-width="2"/>
+  <rect x="400" y="748" width="310" height="105" rx="6" fill="rgba(212,168,67,0.08)"/>
+  <!-- Premium badge -->
+  <rect x="400" y="748" width="80" height="20" rx="4" fill="#d4a843"/>
+  <text x="440" y="762" text-anchor="middle" font-size="8.5" fill="#0f172a" font-weight="700">⭐ PREMIUM</text>
+  <text x="555" y="772" text-anchor="middle" font-size="11" fill="#f0d078" font-weight="600">$7.99/mo · $59.99/yr</text>
+  <text x="555" y="792" text-anchor="middle" font-size="8.5" fill="#94a3b8">All 5 pets unlocked · Unlimited challenges</text>
+  <text x="555" y="810" text-anchor="middle" font-size="8.5" fill="#94a3b8">12 garden plots + themes · 3x rare drop rate</text>
+  <text x="555" y="828" text-anchor="middle" font-size="8.5" fill="#94a3b8">Unlimited AI hints · Daily detailed reports</text>
+  <text x="555" y="844" text-anchor="middle" font-size="8" fill="#64748b">Energy max 150 · Recovery 12h · Family plan $11.99</text>
+
+  <!-- Arrow -->
+  <line x1="710" y1="800" x2="755" y2="800" stroke="#d4a843" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+
+  <!-- IAP Shop -->
+  <rect x="760" y="748" width="240" height="105" rx="6" fill="#0f172a" stroke="#7c5ce7" stroke-width="1.5"/>
+  <rect x="760" y="748" width="240" height="105" rx="6" fill="rgba(124,92,231,0.08)"/>
+  <text x="880" y="770" text-anchor="middle" font-size="11" fill="#7c5ce7" font-weight="600">💎 Gems Shop</text>
+  <text x="880" y="790" text-anchor="middle" font-size="8.5" fill="#94a3b8">Pet accessories (50–300 💎)</text>
+  <text x="880" y="808" text-anchor="middle" font-size="8.5" fill="#94a3b8">Rare skins (200–800 💎)</text>
+  <text x="880" y="826" text-anchor="middle" font-size="8.5" fill="#94a3b8">Evolution boost · Energy refill</text>
+  <text x="880" y="844" text-anchor="middle" font-size="8" fill="#64748b">Garden items · Streak protection</text>
+
+  <!-- Legend -->
+  <g transform="translate(30, 890)">
+    <text x="0" y="0" font-size="9" fill="#64748b" font-weight="500">LEGEND:</text>
+    <rect x="70" y="-8" width="10" height="10" rx="2" fill="rgba(212,168,67,0.3)" stroke="#d4a843" stroke-width="1"/>
+    <text x="85" y="1" font-size="8" fill="#94a3b8">Onboarding</text>
+    <rect x="170" y="-8" width="10" height="10" rx="2" fill="rgba(61,214,200,0.3)" stroke="#3dd6c8" stroke-width="1"/>
+    <text x="185" y="1" font-size="8" fill="#94a3b8">Daily Loop</text>
+    <rect x="265" y="-8" width="10" height="10" rx="2" fill="rgba(124,92,231,0.3)" stroke="#7c5ce7" stroke-width="1"/>
+    <text x="280" y="1" font-size="8" fill="#94a3b8">Progression</text>
+    <rect x="370" y="-8" width="10" height="10" rx="2" fill="rgba(247,147,30,0.3)" stroke="#f7931e" stroke-width="1"/>
+    <text x="385" y="1" font-size="8" fill="#94a3b8">Notifications</text>
+    <rect x="485" y="-8" width="10" height="10" rx="2" fill="rgba(240,107,94,0.3)" stroke="#f06b5e" stroke-width="1"/>
+    <text x="500" y="1" font-size="8" fill="#94a3b8">Detective</text>
+  </g>
+</svg>
+</div>
+
+<!-- Info Cards -->
+<div class="info-grid">
+  <div class="info-card">
+    <h3><span class="dot gold"></span>Key Pivot Points</h3>
+    <ul>
+      <li>❌ 3-question diagnosis → ✅ First math challenge → pet hatches</li>
+      <li>❌ Korean B2B2C → ✅ Global standalone B2C app</li>
+      <li>❌ Fear of failure → ✅ Wrong answers = garden fertilizer</li>
+      <li>❌ Text-heavy UI → ✅ Visual-first, icon-driven design</li>
+      <li>❌ Single-language → ✅ English default + 15 i18n locales</li>
+    </ul>
+  </div>
+  <div class="info-card">
+    <h3><span class="dot teal"></span>Retention Loop</h3>
+    <ul>
+      <li><strong>Daily:</strong> 3-problem challenge (5 min) + streak + pet feeding</li>
+      <li><strong>Weekly:</strong> Global cooperative quest + detective case</li>
+      <li><strong>Ongoing:</strong> Pet evolution, garden growth, ability progression</li>
+      <li><strong>Social (opt-in):</strong> Duo mode, garden visits, weekly showcase</li>
+      <li><strong>Recovery:</strong> 3-day streak grace period, return bonuses</li>
+    </ul>
+  </div>
+  <div class="info-card">
+    <h3><span class="dot purple"></span>Monetization Ethos</h3>
+    <ul>
+      <li>✅ <strong>No Pay-to-Win:</strong> All math progress is skill-based</li>
+      <li>✅ <strong>No Ads:</strong> Free tier is truly ad-free</li>
+      <li>💎 <strong>Cosmetics:</strong> Pet skins, garden decor, accessories</li>
+      <li>⚡ <strong>Convenience:</strong> More challenges, faster energy, extended hints</li>
+      <li>🎁 <strong>Seasonal:</strong> Limited-edition pets &amp; items (FOMO)</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

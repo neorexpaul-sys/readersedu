@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadersEdu — 생각하는 힘을 기르는 곳</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0a0a1a;
+    --bg-navy: #1a237e;
+    --bg-card: #111130;
+    --accent: #c9a84c;
+    --accent-glow: #e8d48b;
+    --accent-dark: #8b6914;
+    --text-warm: #f5f0e8;
+    --text-dim: #a09a90;
+    --green: #4ecdc4;
+    --rose: #e8736a;
+    --border: rgba(201, 168, 76, 0.15);
+    --phi: 1.618;
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--bg-deep);
+    color: var(--text-warm);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* ── Canvas Background ── */
+  #mathCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  /* ── Typography ── */
+  h1, h2, h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+  h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    margin-bottom: 1rem;
+  }
+  h3 {
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  }
+
+  .accent-text {
+    color: var(--accent);
+  }
+  .dim-text {
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Container ── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 26, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  nav .logo {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  nav .logo span {
+    color: var(--text-warm);
+    font-weight: 300;
+  }
+  nav .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  nav .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+  }
+  nav .nav-links a:hover {
+    color: var(--accent);
+  }
+  .btn-nav {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius-sm);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-nav:hover {
+    background: var(--accent);
+    color: var(--bg-deep);
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .hero-content {
+    max-width: 700px;
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+    margin-bottom: 2rem;
+  }
+  .hero-content h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    margin-bottom: 1.5rem;
+  }
+  .hero-content h1 .line2 {
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    color: var(--text-dim);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+  }
+  .hero-glow {
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: var(--bg-deep);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    box-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+  }
+  .btn-primary:hover {
+    background: var(--accent-glow);
+    box-shadow: 0 0 60px rgba(201, 168, 76, 0.4);
+    transform: translateY(-2px);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    margin-left: 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-warm);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 8rem 0;
+    position: relative;
+    z-index: 1;
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .section-header p {
+    color: var(--text-dim);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ── PARADIGM SHIFT ── */
+  .paradigm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .paradigm-old, .paradigm-new {
+    padding: 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: all 0.4s;
+  }
+  .paradigm-old {
+    opacity: 0.5;
+    border-style: dashed;
+  }
+  .paradigm-new {
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.08);
+  }
+  .paradigm-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .paradigm-old .paradigm-label { color: var(--text-dim); }
+  .paradigm-new .paradigm-label { color: var(--accent); }
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+  }
+  .flow-step .arrow {
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .paradigm-old .flow-step { color: var(--text-dim); }
+  .paradigm-new .flow-step { color: var(--text-warm); }
+
+  /* ── AI MENTOR DEMO ── */
+  .chat-demo {
+    max-width: 650px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .chat-demo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--green), var(--accent));
+  }
+  .chat-bubble {
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    max-width: 85%;
+    animation: fadeInUp 0.6s forwards;
+    opacity: 0;
+  }
+  .chat-bubble.student {
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    margin-left: auto;
+    text-align: right;
+    animation-delay: 0.2s;
+  }
+  .chat-bubble.ai {
+    background: transparent;
+    border: 1px solid var(--border);
+    animation-delay: 0.8s;
+  }
+  .chat-bubble .speaker {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .chat-bubble.student .speaker { color: var(--accent); }
+  .chat-bubble.ai .speaker { color: var(--green); }
+  .chat-input-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    opacity: 0;
+    animation: fadeInUp 0.6s 1.5s forwards;
+  }
+  .chat-input-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-warm);
+    padding: 0.5rem 1rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+  }
+  .chat-input-bar button {
+    background: var(--accent);
+    border: none;
+    color: var(--bg-deep);
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CORE EXPERIENCES ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .exp-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    transition: all 0.4s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .exp-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(201,168,76,0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .exp-card:hover::after { opacity: 1; }
+  .exp-card:hover {
+    transform: translateY(-4px) rotateX(2deg);
+    border-color: rgba(201, 168, 76, 0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .exp-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .exp-card h3 {
+    margin-bottom: 0.8rem;
+  }
+  .exp-card p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+  .exp-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 50px;
+    padding: 0.3rem 0.8rem;
+  }
+
+  /* ── TRUST ── */
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .trust-stat {
+    padding: 2rem;
+  }
+  .trust-stat .number {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .trust-stat .label {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+
+  /* ── CTA BOTTOM ── */
+  #cta {
+    text-align: center;
+  }
+  #cta .cta-glow-top {
+    width: 200px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 0 auto 3rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ── PARTICLES (JS-driven canvas) ── */
+  .hero-particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    section { padding: 4rem 0; }
+    .paradigm-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-glow { display: none; }
+    nav .nav-links { display: none; }
+    .btn-secondary { margin-left: 0; margin-top: 1rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MATH FRACTAL CANVAS -->
+<canvas id="mathCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Readers<span>Edu</span></div>
+  <ul class="nav-links">
+    <li><a href="#paradigm">패러다임</a></li>
+    <li><a href="#mentor">AI 멘토</a></li>
+    <li><a href="#experiences">경험</a></li>
+  </ul>
+  <button class="btn-nav">무료 시작</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas class="hero-particles" id="heroParticles"></canvas>
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-label">AI 시대의 수학 플랫폼</div>
+      <h1>
+        답을 맞추는 시대는<br>
+        <span class="line2">끝났습니다.</span>
+      </h1>
+      <h1 style="margin-top: 0.5rem;">
+        이제, <span class="line2">생각을 키울 시간</span>입니다.
+      </h1>
+      <p class="hero-sub">
+        정답을 알려주는 AI가 아닙니다. 당신의 생각을 이끌어내는 AI가<br>
+        곁에서 질문하고, 기록하고, 함께 성장합니다.
+      </p>
+      <div>
+        <a href="#" class="btn-primary">
+          <span>내 생각을 펼치러 가기</span>
+          <span style="font-size:1.2rem">→</span>
+        </a>
+        <a href="#mentor" class="btn-secondary">AI 멘토 만나보기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARADIGM SHIFT -->
+<section id="paradigm">
+  <div class="container">
+    <div class="section-header">
+      <h2>이제 수학은 <span class="accent-text">이렇게</span> 합니다</h2>
+      <p>20세기 시험 패러다임에서 벗어나, AI와 함께 생각을 확장하는 경험</p>
+    </div>
+    <div class="paradigm-grid">
+      <div class="paradigm-old">
+        <div class="paradigm-label">전통적 방식</div>
+        <div class="flow-step"><span class="arrow">①</span> 문제 제시</div>
+        <div class="flow-step"><span class="arrow">②</span> 풀이 입력</div>
+        <div class="flow-step"><span class="arrow">③</span> 정오답 채점</div>
+        <div class="flow-step"><span class="arrow">④</span> 오답노트</div>
+        <p style="margin-top:1rem;font-size:0.85rem;color:var(--text-dim)">
+          결과 중심 · 실패에 대한 두려움 · 사고 과정 소멸
+        </p>
+      </div>
+      <div class="paradigm-new">
+        <div class="paradigm-label">✨ ReadersEdu 방식</div>
+        <div class="flow-step"><span class="arrow">①</span> <strong>질문 생성</strong> — 스스로 질문을 만든다</div>
+        <div class="flow-step"><span class="arrow">②</span> <strong>사고 실험</strong> — 안전하게 탐험한다</div>
+        <div class="flow-step"><span class="arrow">③</span> <strong>과정 기록</strong> — 모든 생각이 저널에 축적</div>
+        <div class="flow-step"><span class="arrow">④</span> <strong>패턴 발견</strong> — AI가 사고의 강점을 분석</div>
+        <div class="flow-step"><span class="arrow">⑤</span> <strong>성장 인식</strong> — 메타인지로 완성</div>
+        <p style="margin-top:1rem;font-size:0.85rem;color:var(--green)">
+          과정 중심 · 틀릴수록 데이터 자산 · 사고의 질이 핵심
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI MENTOR DEMO -->
+<section id="mentor">
+  <div class="container">
+    <div class="section-header">
+      <h2>정답을 <span class="accent-text">알려주지 않는</span> AI</h2>
+      <p>소크라테스처럼 질문하고, 당신의 생각을 이끌어냅니다</p>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-bubble student">
+        <span class="speaker">학생</span>
+        이 문제 어떻게 풀어요? 모르겠어요...
+      </div>
+      <div class="chat-bubble ai">
+        <span class="speaker">AI 멘토</span>
+        그 전에, 이 문제를 보고 가장 먼저 무슨 생각이 들었는지 말해줄 수 있을까? 정답이 아니어도 괜찮아. 네 생각 자체가 소중하니까.
+      </div>
+      <div class="chat-bubble student" style="animation-delay: 1.5s">
+        <span class="speaker">학생</span>
+        음... x가 있는 걸 보니까 방정식인 것 같은데, 숫자가 복잡해서 어디서부터 시작해야 할지...
+      </div>
+      <div class="chat-bubble ai" style="animation-delay: 2.2s">
+        <span class="speaker">AI 멘토</span>
+        좋은 직관이야! 방정식이라는 걸 알아챈 것만으로도 훌륭해. 그럼 복잡한 숫자 대신에, 더 간단한 버전으로 바꿔볼까? 예를 들어 x + 2 = 5는 풀 수 있어?
+      </div>
+      <div class="chat-input-bar">
+        <input type="text" placeholder="AI 멘토에게 답장하기..." disabled>
+        <button disabled>→</button>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--text-dim)">
+      실제 AI 멘토는 학생의 수준, 감정 상태, 사고 스타일을 학습하여 맞춤형 질문을 생성합니다
+    </p>
+  </div>
+</section>
+
+<!-- CORE EXPERIENCES -->
+<section id="experiences">
+  <div class="container">
+    <div class="section-header">
+      <h2>세 가지 <span class="accent-text">핵심 경험</span></h2>
+      <p>AI 시대 수학 학습의 새로운 기준</p>
+    </div>
+    <div class="cards-grid">
+      <!-- Card 1: AI Mentor -->
+      <div class="exp-card" onmousemove="updateGlow(event, this)">
+        <div class="exp-icon">🧠</div>
+        <h3>AI 수학 멘토</h3>
+        <p>
+          소크라테스식 문답법으로 사고를 확장합니다. 답을 주지 않고 질문으로 이끌어, 스스로 깨닫는 힘을 기릅니다.
+        </p>
+        <span class="exp-tag">질문하는 AI</span>
+        <span class="exp-tag">감정 인식</span>
+      </div>
+      <!-- Card 2: Math Gym -->
+      <div class="exp-card" onmousemove="updateGlow(event, this)">
+        <div class="exp-icon">💪</div>
+        <h3>수학 체력장</h3>
+        <p>
+          개념별 숙련도를 근육처럼 시각화합니다. 정확력, 지구력, 유연성, 회복력, 창의력 — 5가지 체력 지표로 성장을 추적합니다.
+        </p>
+        <span class="exp-tag">맞춤 훈련</span>
+        <span class="exp-tag">5종 체력</span>
+      </div>
+      <!-- Card 3: Math Journal -->
+      <div class="exp-card" onmousemove="updateGlow(event, this)">
+        <div class="exp-icon">📖</div>
+        <h3>수학 저널</h3>
+        <p>
+          모든 사고 과정이 한 권의 책이 됩니다. 3개월 전 몰랐던 개념을 지금 설명하는 당신 — 성장의 궤적을 아름답게 기록합니다.
+        </p>
+        <span class="exp-tag">포트폴리오</span>
+        <span class="exp-tag">사고 분석</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section id="trust">
+  <div class="container">
+    <div class="section-header">
+      <h2>Readers<span class="accent-text">Edu</span>와 함께하는 <span class="accent-text">성장</span></h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-stat">
+        <span class="number">10+</span>
+        <span class="label">년 교육 노하우</span>
+      </div>
+      <div class="trust-stat">
+        <span class="number">2</span>
+        <span class="label">오프라인 캠퍼스</span>
+      </div>
+      <div class="trust-stat">
+        <span class="number">5</span>
+        <span class="label">체력 성장 지표</span>
+      </div>
+      <div class="trust-stat">
+        <span class="number">∞</span>
+        <span class="label">가능성의 공간</span>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:2rem;font-size:0.85rem;color:var(--text-dim)">
+      송파구 방이·잠실 오프라인 학원에서 검증된 교육 철학이 디지털 플랫폼으로 확장됩니다
+    </p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-glow-top"></div>
+    <h2 style="margin-bottom:1rem;">지금, <span class="accent-text">생각을 펼쳐보세요</span></h2>
+    <p style="color:var(--text-dim);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto;">
+      첫 14일 동안 AI 멘토와 수학 체력장을 무료로 경험하세요.<br>
+      틀리는 것도, 모르는 것도 — 전부 소중한 데이터입니다.
+    </p>
+    <a href="#" class="btn-primary" style="font-size:1.1rem;padding:1.2rem 2.5rem;">
+      무료로 시작하기 →
+    </a>
+    <p style="margin-top:1.5rem;font-size:0.8rem;color:var(--text-dim);">
+      신용카드 정보 불필요 · 언제든지 탈퇴 가능
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom:0.5rem;">
+      <span style="color:var(--accent);font-weight:500;">ReadersEdu Inc.</span> — 생각하는 힘을 기르는 곳
+    </p>
+    <p>
+      © 2026 ReadersEdu. All rights reserved.
+      &nbsp;·&nbsp; <a href="#">readersedu.app</a>
+      &nbsp;·&nbsp; <a href="#">readersmath.com</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// ── Math Fractal Background Canvas ──
+(function() {
+  const canvas = document.getElementById('mathCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 60;
+  let mouseX = -1000, mouseY = -1000;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.size = Math.random() * 1.5 + 0.5;
+      this.connections = [];
+    }
+    update() {
+      // Gentle attraction to mouse
+      const dx = mouseX - this.x;
+      const dy = mouseY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 200) {
+        this.vx += (dx / dist) * 0.02;
+        this.vy += (dy / dist) * 0.02;
+      }
+      // Damping
+      this.vx *= 0.99;
+      this.vy *= 0.99;
+      this.x += this.vx;
+      this.y += this.vy;
+      // Wrap
+      if (this.x < 0) this.x = canvas.width;
+      if (this.x > canvas.width) this.x = 0;
+      if (this.y < 0) this.y = canvas.height;
+      if (this.y > canvas.height) this.y = 0;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201, 168, 76, 0.3)';
+      ctx.fill();
+    }
+  }
+
+  // Create particles
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new Particle());
+  }
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const alpha = (1 - dist / 120) * 0.08;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(201, 168, 76, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawConnections();
+    requestAnimationFrame(animate);
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+  document.addEventListener('touchmove', (e) => {
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+  });
+
+  animate();
+})();
+
+// ── Card Mouse Glow Effect ──
+function updateGlow(e, card) {
+  const rect = card.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  card.style.setProperty('--mx', x + '%');
+  card.style.setProperty('--my', y + '%');
+}
+
+// ── Scroll fade-in ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.exp-card, .paradigm-old, .paradigm-new, .trust-stat').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

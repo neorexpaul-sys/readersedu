@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>readersedu — Grow Your Thinking</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS Variables (readersedu Global Design System) ===== */
+:root {
+  --void-black: #080818;
+  --midnight: #1b1b3a;
+  --midnight-light: #252550;
+  --stellar-gold: #d4a843;
+  --stellar-gold-glow: #f0d078;
+  --star-white: #f8f4e6;
+  --nebula-teal: #3dd6c8;
+  --nebula-teal-dim: rgba(61, 214, 200, 0.15);
+  --comet-coral: #f06b5e;
+  --comet-coral-dim: rgba(240, 107, 94, 0.15);
+  --void-purple: #7c5ce7;
+  --void-purple-dim: rgba(124, 92, 231, 0.2);
+  --nova-orange: #f7931e;
+  --text-muted: #8890b0;
+  --card-bg: #111130;
+  --card-border: rgba(212,168,67,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --tab-height: 68px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--void-black);
+  color: var(--star-white);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body.modal-open { overflow: hidden; }
+
+/* ===== App Shell ===== */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,92,231,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(61,214,200,0.05) 0%, transparent 50%),
+              var(--void-black);
+}
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 20px calc(var(--tab-height) + var(--safe-bottom) + 16px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen.active { display: flex; }
+
+/* ===== Status Bar ===== */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.status-bar .pet-icon { font-size: 1.2rem; }
+
+/* ===== Header ===== */
+.app-header {
+  padding: 8px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--stellar-gold);
+  letter-spacing: -0.01em;
+}
+.app-header .streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(247,147,30,0.12);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--nova-orange);
+}
+
+/* ===== Bottom Tab Bar ===== */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: calc(var(--tab-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: rgba(8,8,24,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(212,168,67,0.1);
+  display: flex;
+  z-index: 100;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  font-family: inherit;
+  padding: 6px 0;
+  letter-spacing: 0.02em;
+}
+.tab-item .tab-icon { font-size: 1.35rem; transition: transform 0.2s; }
+.tab-item.active { color: var(--stellar-gold); }
+.tab-item.active .tab-icon { transform: translateY(-2px); }
+.tab-item:active { opacity: 0.7; }
+
+/* ===== Cards ===== */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card:active { transform: scale(0.985); }
+.card:active::before { opacity: 1; }
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--stellar-gold-glow);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* ===== Pet Display ===== */
+.pet-display {
+  text-align: center;
+  padding: 20px 0 12px;
+}
+.pet-creature {
+  font-size: 5rem;
+  display: inline-block;
+  animation: pet-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(212,168,67,0.3));
+}
+@keyframes pet-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.pet-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--stellar-gold);
+  margin-top: 8px;
+}
+.pet-stage {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.pet-type-badge {
+  display: inline-block;
+  background: rgba(212,168,67,0.12);
+  color: var(--stellar-gold-glow);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  margin-top: 6px;
+  letter-spacing: 0.03em;
+}
+
+/* ===== Evolution Bar ===== */
+.evo-bar {
+  margin-top: 10px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  height: 7px;
+  overflow: hidden;
+}
+.evo-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--void-purple), var(--stellar-gold));
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+.evo-stages {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding: 0 2px;
+}
+
+/* ===== Garden Grid ===== */
+.garden-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.garden-plot {
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(212,168,67,0.12);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.garden-plot:active { background: rgba(212,168,67,0.06); }
+.garden-plot .plant-emoji { font-size: 1.8rem; transition: transform 0.3s; }
+.garden-plot .plant-name { font-size: 0.58rem; color: var(--text-muted); text-align: center; }
+.garden-plot .plant-stage-label { font-size: 0.52rem; color: var(--stellar-gold); opacity: 0.7; }
+.garden-plot.stage-0 .plant-emoji { opacity: 0.3; }
+.garden-plot.stage-1 .plant-emoji { opacity: 0.6; }
+.garden-plot.stage-2 .plant-emoji { opacity: 0.85; }
+.garden-plot.stage-3 .plant-emoji { opacity: 1; filter: drop-shadow(0 0 8px rgba(61,214,200,0.35)); }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 24px;
+  border-radius: 28px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  letter-spacing: 0.01em;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--stellar-gold), #b8860b);
+  color: #1a1a1a;
+  box-shadow: 0 4px 24px rgba(212,168,67,0.25);
+}
+.btn-secondary {
+  background: rgba(212,168,67,0.08);
+  color: var(--stellar-gold);
+  border: 1px solid rgba(212,168,67,0.15);
+}
+.btn-premium {
+  background: linear-gradient(135deg, var(--void-purple), #5a3ed4);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(124,92,231,0.3);
+}
+.btn-small {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  border-radius: 22px;
+  width: auto;
+}
+.btn-icon {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 0.72rem;
+  border-radius: 18px;
+  background: var(--nebula-teal-dim);
+  color: var(--nebula-teal);
+  border: 1px solid rgba(61,214,200,0.2);
+}
+
+/* ===== Onboarding ===== */
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  padding: 20px 20px;
+  gap: 18px;
+}
+.onboarding-emoji { font-size: 4.5rem; animation: pet-float 3s ease-in-out infinite; }
+.onboarding-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--stellar-gold);
+  line-height: 1.3;
+}
+.onboarding-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 320px;
+}
+.onboarding-egg {
+  font-size: 6rem;
+  animation: egg-pulse 1.5s ease-in-out infinite;
+  cursor: pointer;
+  filter: drop-shadow(0 0 40px rgba(124,92,231,0.5));
+  transition: transform 0.15s;
+}
+.onboarding-egg:active { transform: scale(1.08); }
+@keyframes egg-pulse {
+  0%, 100% { filter: drop-shadow(0 0 40px rgba(124,92,231,0.5)); }
+  50% { filter: drop-shadow(0 0 60px rgba(124,92,231,0.8)); }
+}
+
+/* Challenge UI */
+.challenge-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+}
+.challenge-num {
+  font-size: 0.68rem;
+  color: var(--void-purple);
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.challenge-visual {
+  font-size: 3rem;
+  margin: 12px 0;
+}
+.challenge-text {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.challenge-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.challenge-option {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  color: var(--star-white);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.challenge-option:active { background: rgba(124,92,231,0.12); border-color: rgba(124,92,231,0.3); }
+.challenge-option.selected {
+  background: rgba(124,92,231,0.15);
+  border-color: var(--void-purple);
+  color: var(--void-purple);
+}
+.challenge-option.correct {
+  background: rgba(61,214,200,0.12) !important;
+  border-color: var(--nebula-teal) !important;
+  color: var(--nebula-teal) !important;
+}
+.challenge-option.wrong {
+  background: rgba(240,107,94,0.1) !important;
+  border-color: var(--comet-coral) !important;
+  color: var(--comet-coral) !important;
+}
+
+/* Hatch Animation */
+.hatch-animation {
+  font-size: 6rem;
+  animation: hatch-burst 0.8s ease-out;
+}
+@keyframes hatch-burst {
+  0% { transform: scale(1); filter: brightness(2); }
+  50% { transform: scale(1.3) rotate(10deg); filter: brightness(3); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.hatch-sparkles {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle-fly 0.6s ease-out forwards;
+}
+@keyframes sparkle-fly {
+  from { opacity: 1; transform: translate(0, 0) scale(1); }
+  to { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+}
+
+/* ===== Daily Challenge ===== */
+.daily-banner {
+  background: linear-gradient(135deg, rgba(124,92,231,0.15), rgba(61,214,200,0.08));
+  border: 1px solid rgba(124,92,231,0.2);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.daily-banner::after {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(212,168,67,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.daily-label {
+  font-size: 0.62rem;
+  color: var(--void-purple);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.daily-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--star-white);
+  margin: 6px 0;
+}
+.daily-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===== Answer Input ===== */
+.answer-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--star-white);
+  font-size: 1.1rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.answer-input:focus { outline: none; border-color: var(--stellar-gold); }
+
+/* ===== Progress ===== */
+.streak-flame {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  color: var(--nova-orange);
+  font-weight: 700;
+}
+.feedback-positive { color: var(--nebula-teal); font-weight: 600; font-size: 0.9rem; }
+.feedback-growth { color: var(--stellar-gold-glow); font-weight: 600; font-size: 0.85rem; }
+
+/* ===== Activity Feed ===== */
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.76rem;
+}
+.activity-icon { font-size: 1.2rem; }
+.activity-time { font-size: 0.62rem; color: var(--text-muted); margin-left: auto; }
+.activity-xp { color: var(--stellar-gold); font-weight: 700; font-size: 0.68rem; }
+
+/* ===== Profile Stats ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.stat-card {
+  text-align: center;
+  padding: 14px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+}
+.stat-card .stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--stellar-gold);
+}
+.stat-card .stat-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.03em;
+}
+
+/* ===== Ability List ===== */
+.ability-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ability-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.ability-info { flex: 1; }
+.ability-name { font-size: 0.76rem; font-weight: 600; }
+.ability-desc { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
+.ability-bar-bg {
+  height: 5px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.ability-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+.ability-value {
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+  color: var(--stellar-gold-glow);
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+.modal-content h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--stellar-gold);
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+}
+.modal-content p { color: var(--text-muted); font-size: 0.8rem; line-height: 1.6; margin-bottom: 12px; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--stellar-gold);
+  color: var(--stellar-gold-glow);
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  z-index: 400;
+  animation: fadeInUp 0.3s ease-out;
+  white-space: nowrap;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* ===== Sprout Animation ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(212,168,67,0.2); }
+  50% { box-shadow: 0 0 40px rgba(212,168,67,0.4); }
+}
+@keyframes sprout {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.animate-in { animation: fadeInUp 0.4s ease-out; }
+.glow { animation: glowPulse 2s ease-in-out infinite; }
+.sprout-anim { animation: sprout 0.5s ease-out; }
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(212,168,67,0.15); border-radius: 3px; }
+
+/* ===== TTS indicator ===== */
+.tts-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nebula-teal);
+  animation: glowPulse 1s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span id="statusLeft">🌟 Thought Garden</span>
+    <span id="statusRight" class="pet-icon"></span>
+  </div>
+
+  <!-- ============ SCREEN: Onboarding ============ -->
+  <div id="screenOnboarding" class="screen active">
+    <div class="onboarding-container" id="onboardingContent"></div>
+  </div>
+
+  <!-- ============ SCREEN: Dashboard ============ -->
+  <div id="screenDashboard" class="screen">
+    <div class="app-header">
+      <h1>🌟 My Garden</h1>
+      <span class="streak-badge" id="streakBadge">🔥 0</span>
+    </div>
+    <div id="dashboardContent"></div>
+  </div>
+
+  <!-- ============ SCREEN: Garden ============ -->
+  <div id="screenGarden" class="screen">
+    <div class="app-header"><h1>🏡 Garden</h1></div>
+    <div id="gardenContent"></div>
+  </div>
+
+  <!-- ============ SCREEN: Pet ============ -->
+  <div id="screenPet" class="screen">
+    <div class="app-header"><h1>🐾 Pet Collection</h1></div>
+    <div id="petContent"></div>
+  </div>
+
+  <!-- ============ SCREEN: Profile ============ -->
+  <div id="screenProfile" class="screen">
+    <div class="app-header"><h1>👤 Profile</h1></div>
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar" id="tabBar" style="display:none;">
+    <button class="tab-item active" data-screen="dashboard">
+      <span class="tab-icon">🏠</span>Home
+    </button>
+    <button class="tab-item" data-screen="garden">
+      <span class="tab-icon">🏡</span>Garden
+    </button>
+    <button class="tab-item" data-screen="pet">
+      <span class="tab-icon">🐾</span>Pet
+    </button>
+    <button class="tab-item" data-screen="profile">
+      <span class="tab-icon">👤</span>Profile
+    </button>
+  </nav>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// readersedu.app Global B2C MVP — v2.0
+// ============================================================
+
+// ===== CONSTANTS =====
+const PET_TYPES = {
+  logical:    { name: 'Logical',    displayName: 'Hex',   emoji: '🦉', label: 'Owl of Wisdom',    color: '#5c6bc0', desc: 'You break problems down step by step. Like an owl, you see what others miss.' },
+  intuitive:  { name: 'Intuitive',  displayName: 'Flux',  emoji: '🦊', label: 'Fox of Insight',   color: '#ef6c00', desc: 'You spot patterns in a flash. Like a fox, your instincts guide the way.' },
+  persistent: { name: 'Persistent', displayName: 'Terra', emoji: '🐢', label: 'Turtle of Grit',   color: '#43a047', desc: 'You never give up. Like a turtle, slow and steady wins every race.' },
+  creative:   { name: 'Creative',   displayName: 'Nova',  emoji: '🐉', label: 'Dragon of Wonder', color: '#ab47bc', desc: 'You think beyond boundaries. Like a dragon, your imagination takes flight.' },
+  collaborative:{ name: 'Collaborative', displayName: 'Echo', emoji: '🐬', label: 'Dolphin of Connection', color: '#29b6f6', desc: 'You grow by sharing. Like a dolphin, you make everyone around you better.' }
+};
+
+const EVO_STAGES = ['Egg', 'Hatchling', 'Adult', 'Legendary'];
+const EVO_XP_THRESHOLDS = [0, 100, 300, 600];
+
+const GARDEN_PLANTS = [
+  { id: 'algebra',   name: 'Algebra',    emoji: '📐', stages: ['🌰','🌱','🌿','🌳'] },
+  { id: 'geometry',  name: 'Geometry',   emoji: '💎', stages: ['🌰','🌱','🌿','🔷'] },
+  { id: 'fractions', name: 'Fractions',  emoji: '🍕', stages: ['🌰','🌱','🌿','🥧'] },
+  { id: 'patterns',  name: 'Patterns',   emoji: '🌀', stages: ['🌰','🌱','🌿','✨'] },
+  { id: 'measure',   name: 'Measurement',emoji: '📏', stages: ['🌰','🌱','🌿','🏗️'] },
+  { id: 'data',      name: 'Data & Stats',emoji:'📊', stages: ['🌰','🌱','🌿','🎯'] },
+];
+
+const DAILY_CHALLENGES = [
+  { id: 1, text: 'What comes next? 3, 6, 9, 12, ?', answer: '15', type: 'patterns', hint: 'Adding 3 each time!', visual: '3️⃣6️⃣9️⃣12️⃣❓' },
+  { id: 2, text: 'If x + 8 = 20, what is x?', answer: '12', type: 'algebra', hint: 'Subtract 8 from both sides!', visual: 'x + 8 = 20' },
+  { id: 3, text: 'A square has sides of 6cm. What is its area?', answer: '36', type: 'geometry', hint: 'Area = side × side', visual: '⬜ 6cm' },
+  { id: 4, text: 'What is 1/2 + 1/4?', answer: '3/4', type: 'fractions', hint: 'Find a common denominator (4)!', visual: '½ + ¼ = ?' },
+  { id: 5, text: 'If 3 × y = 21, what is y?', answer: '7', type: 'algebra', hint: 'Divide 21 by 3!', visual: '3 × y = 21' },
+  { id: 6, text: 'What is 25% of 200?', answer: '50', type: 'data', hint: '25% = 1/4. Divide 200 by 4!', visual: '25% of 200 = ?' },
+  { id: 7, text: 'A triangle has angles: 50°, 60°, ?°', answer: '70', type: 'geometry', hint: 'All angles in a triangle sum to 180°', visual: '📐 50° + 60° + ? = 180°' },
+  { id: 8, text: '2² × 3 = ?', answer: '12', type: 'algebra', hint: '2² = 4, then 4 × 3', visual: '2² × 3 = ?' },
+];
+
+const ONBOARDING_CHALLENGES = [
+  {
+    id: 1,
+    type: 'patterns',
+    text: 'What number completes the pattern?',
+    visual: '2, 4, 6, 8, ?',
+    options: ['9', '10', '12', '14'],
+    correct: 1, // index
+    hint: 'Count by 2...',
+    measures: 'intuition',
+  },
+  {
+    id: 2,
+    type: 'algebra',
+    text: 'If 3 apples + 2 = 5 apples, how heavy is 1 apple?',
+    visual: '🍎🍎🍎 + 2 = 🍎🍎🍎🍎🍎',
+    options: ['1', '2', '3', '0.5'],
+    correct: 0,
+    hint: 'Think of it like a balance scale!',
+    measures: 'logical',
+  },
+  {
+    id: 3,
+    type: 'geometry',
+    text: 'Which shape is made of 4 equal sides?',
+    visual: '',
+    options: ['Triangle ▲', 'Square ■', 'Circle ●', 'Star ★'],
+    correct: 1,
+    hint: 'All sides are equal and it has 4 corners...',
+    measures: 'creative',
+  },
+];
+
+// ===== STATE =====
+const DEFAULT_STATE = {
+  user: {
+    name: '',
+    thinkingStyle: null,
+    onboardingComplete: false,
+    onboardingStep: 0,  // 0=tap egg, 1=challenge 1, 2=challenge 2, 3=challenge 3, 4=pet hatched, 5=name pet
+    challengeAnswers: [],
+    firstVisit: null,
+  },
+  pet: {
+    type: null,
+    name: '',
+    stage: 0,
+    xp: 0,
+    energy: 100,
+    lastFedDate: null,
+    ownedPets: [], // list of {type, skin}
+    activePetType: null,
+  },
+  garden: GARDEN_PLANTS.map(p => ({
+    id: p.id,
+    water: 0,
+    stage: 0,
+    items: [],
+  })),
+  stats: {
+    problemsAttempted: 0,
+    problemsSolved: 0,
+    streak: 0,
+    lastSessionDate: null,
+    lastChallengeDate: null,
+    activityLog: [],
+    gems: 0,
+    isPremium: false,
+  },
+  abilities: {
+    analysis: 5, intuition: 5, persistence: 5,
+    creativity: 5, explanation: 5, recovery: 5,
+  },
+  settings: {
+    voiceEnabled: false,
+    soundEnabled: true,
+  },
+};
+
+let state = loadState();
+let currentScreen = 'onboarding';
+let currentProblem = null;
+let onboardingAnswers = [];
+
+// ===== PERSISTENCE =====
+function loadState() {
+  try {
+    const raw = localStorage.getItem('readersedu_global_state');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      return deepMerge(DEFAULT_STATE, saved);
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+
+function saveState() {
+  try { localStorage.setItem('readersedu_global_state', JSON.stringify(state)); } catch (e) {}
+}
+
+function deepMerge(defaults, saved) {
+  const result = JSON.parse(JSON.stringify(defaults));
+  for (const key of Object.keys(saved)) {
+    if (key in result && typeof result[key] === 'object' && result[key] !== null && !Array.isArray(result[key])) {
+      result[key] = deepMerge(result[key], saved[key]);
+    } else {
+      result[key] = saved[key];
+    }
+  }
+  return result;
+}
+
+function resetState() {
+  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  saveState();
+  location.reload();
+}
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const screenEl = document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1));
+  if (screenEl) screenEl.classList.add('active');
+  document.getElementById('tabBar').style.display = name === 'onboarding' ? 'none' : 'flex';
+
+  if (name !== 'onboarding') {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    const tab = document.querySelector(`.tab-item[data-screen="${name}"]`);
+    if (tab) tab.classList.add('active');
+  }
+
+  currentScreen = name;
+  renderScreen(name);
+}
+
+function renderScreen(name) {
+  switch (name) {
+    case 'onboarding': renderOnboarding(); break;
+    case 'dashboard': renderDashboard(); break;
+    case 'garden': renderGarden(); break;
+    case 'pet': renderPet(); break;
+    case 'profile': renderProfile(); break;
+  }
+  updateStatusBar();
+}
+
+function updateStatusBar() {
+  const left = document.getElementById('statusLeft');
+  const right = document.getElementById('statusRight');
+  const name = state.pet.name || 'Thinkling';
+  left.textContent = state.pet.type ? `🌟 ${name}'s Garden` : '🌟 Thought Garden';
+  right.textContent = state.pet.type ? PET_TYPES[state.pet.type].emoji : '🥚';
+}
+
+// ===== ONBOARDING =====
+function renderOnboarding() {
+  const container = document.getElementById('onboardingContent');
+  const step = state.user.onboardingStep;
+  if (!state.user.firstVisit) { state.user.firstVisit = Date.now(); saveState(); }
+  container.innerHTML = '';
+
+  // Step 0: Welcome + Tap the Egg
+  if (step === 0) {
+    container.innerHTML = `
+      <div class="animate-in" style="font-size:2rem;color:var(--void-purple)">✨</div>
+      <div class="onboarding-title animate-in" style="animation-delay:0.15s">
+        A Math Star<br>is Arriving!
+      </div>
+      <div class="onboarding-text animate-in" style="animation-delay:0.3s">
+        <p>Welcome to <strong style="color:var(--stellar-gold)">readersedu</strong> —<br>where your thinking grows like a garden.</p>
+        <p style="margin-top:8px;font-size:0.8rem;color:var(--text-muted)">No tests. No pressure.<br>Just <strong style="color:var(--nebula-teal)">play, explore, and grow.</strong></p>
+      </div>
+      <div class="onboarding-egg animate-in" style="animation-delay:0.5s" onclick="startHatching()">🥚</div>
+      <div class="onboarding-text animate-in" style="animation-delay:0.6s;font-size:0.78rem;color:var(--void-purple);font-weight:600">
+        ↑ Tap the egg to meet your thinking partner! ↑
+      </div>
+    `;
+  }
+
+  // Steps 1-3: Onboarding Challenges
+  else if (step >= 1 && step <= 3) {
+    const qIndex = step - 1;
+    const q = ONBOARDING_CHALLENGES[qIndex];
+    container.innerHTML = `
+      <div class="challenge-card animate-in">
+        <div class="challenge-num">Challenge ${step} of 3</div>
+        ${q.visual ? `<div class="challenge-visual">${q.visual}</div>` : ''}
+        <div class="challenge-text">${q.text}</div>
+        <div class="challenge-options">
+          ${q.options.map((opt, i) => `
+            <button class="challenge-option" data-idx="${i}" onclick="selectOnboardAnswer(this, ${i}, ${qIndex})">
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <button class="btn btn-primary" id="onboardNextBtn" style="opacity:0.4;margin-top:10px" disabled onclick="advanceOnboarding()">
+        ${qIndex < 2 ? 'Next →' : 'Hatch! ✨'}
+      </button>
+    `;
+  }
+
+  // Step 4: Pet Hatched!
+  else if (step === 4) {
+    const style = determineStyleFromAnswers();
+    state.user.thinkingStyle = style;
+    state.pet.type = style;
+    const petInfo = PET_TYPES[style];
+
+    container.innerHTML = `
+      <div class="hatch-animation animate-in">${petInfo.emoji}</div>
+      <div style="position:absolute;pointer-events:none;" id="sparkleContainer"></div>
+      <div class="onboarding-title animate-in" style="animation-delay:0.3s">
+        <span style="color:${petInfo.color}">${petInfo.displayName}</span><br>hatched!
+      </div>
+      <div class="pet-type-badge animate-in" style="animation-delay:0.5s">${petInfo.label}</div>
+      <div class="onboarding-text animate-in" style="animation-delay:0.6s">${petInfo.desc}</div>
+    `;
+    // Sparkles!
+    setTimeout(() => spawnSparkles(), 100);
+    setTimeout(() => advanceOnboarding(), 2000);
+  }
+
+  // Step 5: Name Your Pet
+  else if (step === 5) {
+    const petInfo = PET_TYPES[state.pet.type];
+    container.innerHTML = `
+      <div class="pet-creature animate-in" style="font-size:5rem">${petInfo.emoji}</div>
+      <div class="onboarding-title animate-in" style="animation-delay:0.15s">Name your pet!</div>
+      <input type="text" id="petNameInput" class="answer-input animate-in" style="max-width:220px;animation-delay:0.3s"
+             placeholder="${petInfo.displayName}..." maxlength="12" autofocus>
+      <button class="btn btn-primary animate-in" style="animation-delay:0.5s;margin-top:8px" onclick="finalizeOnboarding()">
+        Let's Go! 🚀
+      </button>
+    `;
+    setTimeout(() => document.getElementById('petNameInput')?.focus(), 400);
+  }
+}
+
+function startHatching() {
+  state.user.onboardingStep = 1;
+  saveState();
+  renderOnboarding();
+}
+
+function selectOnboardAnswer(btn, idx, qIndex) {
+  const container = btn.parentElement;
+  container.querySelectorAll('.challenge-option').forEach(b => {
+    b.classList.remove('selected');
+  });
+  btn.classList.add('selected');
+  onboardingAnswers[qIndex] = idx;
+  const nextBtn = document.getElementById('onboardNextBtn');
+  if (nextBtn) { nextBtn.disabled = false; nextBtn.style.opacity = '1'; }
+}
+
+function advanceOnboarding() {
+  state.user.onboardingStep++;
+  saveState();
+  renderOnboarding();
+}
+
+function determineStyleFromAnswers() {
+  const correctAnswers = ONBOARDING_CHALLENGES.map(q => q.correct);
+  let correctCount = 0;
+  const styles = [];
+  onboardingAnswers.forEach((ans, i) => {
+    if (ans === correctAnswers[i]) {
+      correctCount++;
+      styles.push(ONBOARDING_CHALLENGES[i].measures);
+    }
+  });
+
+  if (correctCount === 3) return 'creative';
+  if (correctCount >= 2 && styles.includes('logical')) return 'logical';
+  if (correctCount >= 2 && styles.includes('intuition')) return 'intuitive';
+  if (correctCount >= 1) return 'persistent';
+  return 'collaborative';
+}
+
+function spawnSparkles() {
+  const container = document.getElementById('sparkleContainer');
+  if (!container) return;
+  for (let i = 0; i < 20; i++) {
+    const sparkle = document.createElement('span');
+    sparkle.textContent = ['✨','⭐','💫','🌟'][Math.floor(Math.random()*4)];
+    sparkle.style.cssText = `
+      position: absolute;
+      left: 50%; top: 40%;
+      font-size: ${0.8 + Math.random()*1.5}rem;
+      --sx: ${(Math.random()-0.5)*200}px;
+      --sy: ${(Math.random()-0.5)*200}px;
+      animation: sparkle-fly ${0.4+Math.random()*0.6}s ease-out forwards;
+      animation-delay: ${Math.random()*0.3}s;
+    `;
+    container.appendChild(sparkle);
+  }
+  setTimeout(() => { if (container) container.innerHTML = ''; }, 1500);
+}
+
+function finalizeOnboarding() {
+  const input = document.getElementById('petNameInput');
+  const name = input?.value?.trim() || PET_TYPES[state.pet.type].displayName;
+  state.pet.name = name;
+  state.user.onboardingComplete = true;
+  state.user.onboardingStep = 99;
+  state.pet.ownedPets = [{ type: state.pet.type, skin: 'default' }];
+  state.pet.activePetType = state.pet.type;
+  saveState();
+  addActivity('🎉', `${name} the ${PET_TYPES[state.pet.type].label} joined your garden!`);
+  showScreen('dashboard');
+}
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const container = document.getElementById('dashboardContent');
+  if (!container) return;
+
+  checkStreak();
+  const petInfo = PET_TYPES[state.pet.type];
+  const petName = state.pet.name || 'Thinkling';
+  const today = getDateKey();
+
+  // Pick daily challenge if not done today
+  if (state.stats.lastChallengeDate !== today) {
+    const available = DAILY_CHALLENGES.filter(p =>
+      !(state.stats.activityLog || []).some(a => a.problemId === p.id && a.date === today)
+    );
+    if (available.length > 0) {
+      currentProblem = available[Math.floor(Math.random() * available.length)];
+    }
+  }
+
+  const xpToNext = EVO_XP_THRESHOLDS[Math.min(state.pet.stage + 1, 3)];
+  const xpProgress = state.pet.stage >= 3 ? 100 : Math.min(100, Math.round((state.pet.xp / xpToNext) * 100));
+
+  const gardenPreview = state.garden.slice(0, 3).map((p, i) => {
+    const info = GARDEN_PLANTS[i];
+    return `<div class="garden-plot stage-${p.stage}" onclick="showScreen('garden')">
+      <span class="plant-emoji">${info.stages[p.stage]}</span>
+      <span class="plant-name">${info.name}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('streakBadge').textContent = `🔥 ${state.stats.streak}`;
+
+  container.innerHTML = `
+    <!-- Pet Card -->
+    <div class="card animate-in" onclick="showScreen('pet')">
+      <div class="pet-display" style="padding:8px 0">
+        <div class="pet-creature" style="font-size:4.5rem">${petInfo.emoji}</div>
+        <div class="pet-name">${petName}</div>
+        <div class="pet-type-badge">${petInfo.label} · ${EVO_STAGES[state.pet.stage]}</div>
+      </div>
+      <div class="evo-bar">
+        <div class="evo-fill" style="width:${xpProgress}%"></div>
+      </div>
+      <div class="evo-stages">
+        <span>🥚 Egg</span><span>🐣 Hatchling</span><span>🦉 Adult</span><span>✨ Legendary</span>
+      </div>
+      <div style="text-align:center;margin-top:4px;font-size:0.65rem;color:var(--text-muted)">
+        Energy: ${'⚡'.repeat(Math.ceil(state.pet.energy/20))} &nbsp;|&nbsp; XP ${state.pet.xp}/${xpToNext}
+      </div>
+    </div>
+
+    <!-- Daily Challenge -->
+    ${currentProblem ? `
+    <div class="daily-banner animate-in" style="animation-delay:0.1s">
+      <div class="daily-label">⚡ Daily Challenge</div>
+      <div class="daily-title">${currentProblem.text}</div>
+      ${currentProblem.visual ? `<div style="font-size:1.3rem;margin:8px 0;color:var(--stellar-gold-glow)">${currentProblem.visual}</div>` : ''}
+      <input type="text" id="dailyAnswer" class="answer-input" placeholder="Your answer..." autocomplete="off" style="max-width:200px;margin:8px auto">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="submitDailyAnswer()">Submit</button>
+        <button class="btn btn-icon" onclick="showHint()">💡 Hint</button>
+      </div>
+      <div id="dailyFeedback" style="margin-top:8px;text-align:center;font-size:0.82rem"></div>
+      <div class="daily-meta" style="margin-top:8px">
+        <span>⏱ ~2 min</span><span>+15 XP</span><span>💧 Waters garden</span>
+      </div>
+    </div>
+    ` : `
+    <div class="card animate-in">
+      <div class="card-title">✅ Challenge Complete!</div>
+      <div class="card-subtitle">You crushed today's challenge! Come back tomorrow for a new one. 🌙</div>
+    </div>`}
+
+    <!-- Garden Preview -->
+    <div class="card animate-in" style="animation-delay:0.2s" onclick="showScreen('garden')">
+      <div class="card-title">🏡 Your Garden <span style="font-size:0.68rem;color:var(--text-muted);margin-left:auto">View all →</span></div>
+      <div class="garden-grid">${gardenPreview}</div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card animate-in" style="animation-delay:0.3s">
+      <div class="card-title">🎯 Quick Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn btn-secondary btn-small" onclick="quickActivity('question')">💭 Ask a Question</button>
+        <button class="btn btn-secondary btn-small" onclick="quickActivity('water')">💧 Water Garden</button>
+        <button class="btn btn-secondary btn-small" onclick="quickActivity('explain')">🗣️ Explain It</button>
+        <button class="btn btn-secondary btn-small" onclick="quickActivity('creative')">🎨 Try Another Way</button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card animate-in" style="animation-delay:0.4s">
+      <div class="card-title">📋 Recent Activity</div>
+      <div id="recentActivity">
+        ${(state.stats.activityLog || []).slice(-5).reverse().map(a => `
+          <div class="activity-item">
+            <span class="activity-icon">${a.emoji}</span>
+            <span>${a.text}</span>
+            ${a.xp ? `<span class="activity-xp">+${a.xp}XP</span>` : ''}
+            <span class="activity-time">${a.time || ''}</span>
+          </div>
+        `).join('') || '<div style="color:var(--text-muted);font-size:0.72rem;text-align:center;padding:12px 0">No activity yet. Start your first challenge! 🚀</div>'}
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:4px 0 20px">
+      <span class="streak-flame">🔥 ${state.stats.streak}-day streak!</span>
+    </div>
+  `;
+}
+
+// ===== DAILY CHALLENGE =====
+function submitDailyAnswer() {
+  const input = document.getElementById('dailyAnswer');
+  const feedback = document.getElementById('dailyFeedback');
+  if (!input || !currentProblem) return;
+
+  const userAnswer = input.value.trim().toLowerCase();
+  const correctAnswer = currentProblem.answer.toLowerCase();
+  state.stats.problemsAttempted++;
+  state.stats.lastChallengeDate = getDateKey();
+
+  if (userAnswer === correctAnswer) {
+    state.stats.problemsSolved++;
+    const xpGain = 25;
+    state.pet.xp += xpGain;
+    state.pet.energy = Math.max(0, state.pet.energy - 10);
+    state.abilities.analysis = Math.min(100, state.abilities.analysis + 3);
+    addActivity('✅', `Solved daily challenge! "${currentProblem.text}" → ${currentProblem.answer}`, { xp: xpGain, problemId: currentProblem.id });
+    feedback.innerHTML = '<div class="feedback-positive">🎉 Brilliant! +25XP</div>';
+    waterGardenPlant(currentProblem.type);
+    checkEvolution();
+    currentProblem = null;
+    saveState();
+    setTimeout(() => renderDashboard(), 1600);
+  } else {
+    state.abilities.recovery = Math.min(100, state.abilities.recovery + 2);
+    state.abilities.persistence = Math.min(100, state.abilities.persistence + 1);
+    state.pet.xp += 5;
+    state.pet.energy = Math.max(0, state.pet.energy - 5);
+    addActivity('💡', `Tried the challenge! "${currentProblem.text}" — answer: ${currentProblem.answer}`, { xp: 5, problemId: currentProblem.id });
+    feedback.innerHTML = `<div class="feedback-growth">🌱 Almost! Hint: ${currentProblem.hint}<br>+5 XP for trying!</div>`;
+    saveState();
+  }
+}
+
+function showHint() {
+  const feedback = document.getElementById('dailyFeedback');
+  if (!feedback || !currentProblem) return;
+  feedback.innerHTML = `<div class="feedback-growth">💡 Hint: ${currentProblem.hint}</div>`;
+}
+
+function waterGardenPlant(type) {
+  const mapping = { algebra: 0, geometry: 1, fractions: 2, patterns: 3, data: 5, measure: 4 };
+  const idx = mapping[type] || Math.floor(Math.random() * state.garden.length);
+  const plant = state.garden[idx];
+  if (!plant) return;
+  plant.water++;
+  const newStage = Math.min(3, Math.floor(plant.water / 3));
+  if (newStage > plant.stage) {
+    plant.stage = newStage;
+    const info = GARDEN_PLANTS[idx];
+    showToast(`🌱 ${info.name} ${['sprouted!','is growing!','bloomed!','is thriving!'][newStage-1]}`);
+  }
+  saveState();
+}
+
+function checkEvolution() {
+  for (let s = 3; s > state.pet.stage; s--) {
+    if (state.pet.xp >= EVO_XP_THRESHOLDS[s]) {
+      const old = state.pet.stage;
+      state.pet.stage = s;
+      addActivity('🦋', `${state.pet.name} evolved! ${EVO_STAGES[old]} → ${EVO_STAGES[s]}!`);
+      showToast(`🦋 ${state.pet.name} evolved to ${EVO_STAGES[s]}!`);
+      break;
+    }
+  }
+}
+
+// ===== QUICK ACTIVITIES =====
+function quickActivity(type) {
+  const xpMap = { question: 10, water: 5, explain: 15, creative: 12 };
+  const emojiMap = { question: '💭', water: '💧', explain: '🗣️', creative: '🎨' };
+  const textMap = {
+    question: 'Asked a great question! Curiosity fuels growth.',
+    water: 'Watered the garden. Your plants are happy!',
+    explain: 'Explained a concept in your own words. Teaching = learning twice!',
+    creative: 'Found a creative new approach. Think different!'
+  };
+
+  state.pet.xp += xpMap[type];
+  state.pet.energy = Math.max(0, state.pet.energy - 5);
+  if (type === 'question') state.abilities.explanation = Math.min(100, state.abilities.explanation + 2);
+  if (type === 'creative') state.abilities.creativity = Math.min(100, state.abilities.creativity + 3);
+  if (type === 'explain') state.abilities.explanation = Math.min(100, state.abilities.explanation + 3);
+
+  addActivity(emojiMap[type], textMap[type], { xp: xpMap[type] });
+  checkEvolution();
+  saveState();
+  showToast(`${emojiMap[type]} ${textMap[type]} +${xpMap[type]}XP`);
+  renderDashboard();
+}
+
+// ===== GARDEN SCREEN =====
+function renderGarden() {
+  const container = document.getElementById('gardenContent');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="card animate-in">
+      <div class="card-title">🌿 My Thought Garden
+        <span style="font-size:0.62rem;color:var(--text-muted);margin-left:auto">Questions = Sunlight · Practice = Water</span>
+      </div>
+      <div class="garden-grid">
+        ${state.garden.map((p, i) => {
+          const info = GARDEN_PLANTS[i];
+          return `
+          <div class="garden-plot stage-${p.stage}" onclick="waterSpecificPlant(${i})">
+            <span class="plant-emoji">${info.stages[p.stage]}</span>
+            <span class="plant-name">${info.name}</span>
+            <span class="plant-stage-label">Water: ${p.water}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="card animate-in" style="animation-delay:0.1s">
+      <div class="card-title">📖 Garden Guide</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.8">
+        <div>💧 <strong>Water</strong> = Solving problems (3 waters = next stage)</div>
+        <div>☀️ <strong>Sunlight</strong> = Asking questions</div>
+        <div>🪴 <strong>Fertilizer</strong> = Mistakes make the soil richer!</div>
+        <div>🌰 → 🌱 → 🌿 → 🌳 (4 growth stages)</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="waterAllPlants()">💧 Water All Plants (+10XP)</button>
+  `;
+}
+
+function waterSpecificPlant(index) {
+  state.garden[index].water++;
+  state.pet.xp += 3;
+  const plant = state.garden[index];
+  const info = GARDEN_PLANTS[index];
+  const newStage = Math.min(3, Math.floor(plant.water / 3));
+  if (newStage > plant.stage) {
+    plant.stage = newStage;
+    showToast(`🌱 ${info.name} grew!`);
+    addActivity('🌱', `${info.name} reached stage ${newStage}!`, { xp: 5 });
+  }
+  addActivity('💧', `Watered ${info.name}`, { xp: 3 });
+  checkEvolution();
+  saveState();
+  renderGarden();
+}
+
+function waterAllPlants() {
+  state.garden.forEach((p, i) => {
+    p.water++;
+    const newStage = Math.min(3, Math.floor(p.water / 3));
+    if (newStage > p.stage) p.stage = newStage;
+  });
+  state.pet.xp += 10;
+  addActivity('💧', 'Watered the entire garden!', { xp: 10 });
+  checkEvolution();
+  saveState();
+  renderGarden();
+  showToast('💧 Garden fully watered! +10XP');
+}
+
+// ===== PET SCREEN =====
+function renderPet() {
+  const container = document.getElementById('petContent');
+  if (!container) return;
+
+  const petInfo = PET_TYPES[state.pet.type];
+  const xpToNext = EVO_XP_THRESHOLDS[Math.min(state.pet.stage + 1, 3)];
+  const xpProgress = state.pet.stage >= 3 ? 100 : Math.min(100, Math.round((state.pet.xp / xpToNext) * 100));
+
+  container.innerHTML = `
+    <div class="card animate-in">
+      <div class="pet-display">
+        <div class="pet-creature" style="font-size:5.5rem">${petInfo.emoji}</div>
+        <div class="pet-name">${state.pet.name}</div>
+        <div class="pet-type-badge">${petInfo.label}</div>
+        <div class="pet-stage">${EVO_STAGES[state.pet.stage]} · Energy: ${state.pet.energy}/100</div>
+      </div>
+      <div class="evo-bar" style="margin-top:8px">
+        <div class="evo-fill" style="width:${xpProgress}%"></div>
+      </div>
+      <div class="evo-stages">
+        <span>🥚 Egg (0)</span><span>🐣 Hatchling (100)</span><span>🦉 Adult (300)</span><span>✨ Legendary (600)</span>
+      </div>
+      <div style="text-align:center;margin-top:6px;font-size:0.8rem">
+        <strong style="color:var(--stellar-gold)">XP ${state.pet.xp}</strong>
+        <span style="color:var(--text-muted)"> / ${state.pet.stage >= 3 ? 'MAX' : xpToNext - state.pet.xp + ' XP to next'}</span>
+      </div>
+    </div>
+
+    <div class="card animate-in" style="animation-delay:0.1s">
+      <div class="card-title">🍎 Feed Your Pet</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="btn btn-secondary btn-small" onclick="feedPet(8,'🥩','Protein')">🥩 Protein +8XP</button>
+        <button class="btn btn-secondary btn-small" onclick="feedPet(10,'🍚','Carbs')">🍚 Carbs +10XP</button>
+        <button class="btn btn-secondary btn-small" onclick="feedPet(5,'💊','Vitamins')">💊 Vitamins +5XP</button>
+        <button class="btn btn-secondary btn-small" onclick="feedPet(7,'💎','Minerals')">💎 Minerals +7XP</button>
+      </div>
+    </div>
+
+    <div class="card animate-in" style="animation-delay:0.2s">
+      <div class="card-title">🐾 All 5 Thinking Pets</div>
+      ${Object.entries(PET_TYPES).map(([key, info]) => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.74rem">
+          <span style="font-size:1.5rem">${info.emoji}</span>
+          <div style="flex:1">
+            <strong style="color:${info.color}">${info.displayName}</strong> — ${info.label}
+            <div style="color:var(--text-muted);font-size:0.6rem">${info.desc.slice(0,55)}...</div>
+          </div>
+          ${key === state.pet.type ? '<span style="color:var(--nebula-teal);font-size:0.6rem">ACTIVE</span>' : '<span style="color:var(--text-muted);font-size:0.55rem">🔒</span>'}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function feedPet(xp, emoji, name) {
+  state.pet.xp += xp;
+  state.pet.lastFedDate = getDateKey();
+  addActivity(emoji, `Fed ${state.pet.name} ${name}!`, { xp });
+  checkEvolution();
+  saveState();
+  renderPet();
+  showToast(`${emoji} Yum! ${name} +${xp}XP`);
+}
+
+// ===== PROFILE SCREEN =====
+function renderProfile() {
+  const container = document.getElementById('profileContent');
+  if (!container) return;
+
+  const petInfo = PET_TYPES[state.pet.type];
+
+  container.innerHTML = `
+    <div class="card animate-in">
+      <div class="pet-display" style="padding:10px 0">
+        <div class="pet-creature" style="font-size:3.5rem">${petInfo.emoji}</div>
+        <div class="pet-name">${state.user.name || state.pet.name || 'Explorer'}</div>
+        <div class="pet-type-badge">${petInfo.label}</div>
+      </div>
+    </div>
+
+    <div class="card animate-in" style="animation-delay:0.1s">
+      <div class="card-title">📊 Thinking Stats</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value">🔥 ${state.stats.streak}</div>
+          <div class="stat-label">DAY STREAK</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${state.stats.problemsSolved}/${state.stats.problemsAttempted}</div>
+          <div class="stat-label">PROBLEMS SOLVED</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">⭐ ${state.pet.xp}</div>
+          <div class="stat-label">TOTAL XP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">💎 ${state.stats.gems}</div>
+          <div class="stat-label">GEMS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card animate-in" style="animation-delay:0.2s">
+      <div class="card-title">🏆 Abilities</div>
+      ${[
+        { icon: '🧠', name: 'Analysis', key: 'analysis', desc: 'Breaking down problems', color: '#5c6bc0' },
+        { icon: '👁️', name: 'Intuition', key: 'intuition', desc: 'Spotting patterns quickly', color: '#ef6c00' },
+        { icon: '💪', name: 'Persistence', key: 'persistence', desc: 'Never giving up', color: '#43a047' },
+        { icon: '🎨', name: 'Creativity', key: 'creativity', desc: 'Finding new approaches', color: '#ab47bc' },
+        { icon: '🗣️', name: 'Explanation', key: 'explanation', desc: 'Expressing your thinking', color: '#29b6f6' },
+        { icon: '🛡️', name: 'Recovery', key: 'recovery', desc: 'Learning from mistakes', color: '#f06b5e' },
+      ].map(a => `
+        <div class="ability-row">
+          <span class="ability-icon">${a.icon}</span>
+          <div class="ability-info">
+            <div class="ability-name">${a.name}</div>
+            <div class="ability-desc">${a.desc}</div>
+            <div class="ability-bar-bg">
+              <div class="ability-bar-fill" style="width:${state.abilities[a.key]}%;background:${a.color}"></div>
+            </div>
+          </div>
+          <span class="ability-value">${state.abilities[a.key]}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card animate-in" style="animation-delay:0.3s">
+      <div class="card-title">💎 Premium</div>
+      <div class="card-subtitle">Unlock unlimited challenges, rare pets, exclusive garden items, and more!</div>
+      <button class="btn btn-premium" onclick="showToast('✨ Premium coming soon! Stay tuned!')">
+        ⭐ Go Premium — $7.99/mo
+      </button>
+    </div>
+
+    <button class="btn btn-secondary" style="margin-top:8px;color:var(--comet-coral);border-color:rgba(240,107,94,0.2);font-size:0.75rem"
+            onclick="if(confirm('Reset all data? This cannot be undone!'))resetState()">
+      ⚠️ Reset Data
+    </button>
+  `;
+}
+
+// ===== UTILITIES =====
+function getDateKey() { return new Date().toISOString().split('T')[0]; }
+
+function checkStreak() {
+  const today = getDateKey();
+  const last = state.stats.lastSessionDate;
+  if (!last) { state.stats.streak = 1; }
+  else if (last === today) { /* already logged */ }
+  else {
+    const diff = Math.floor((new Date(today) - new Date(last)) / 86400000);
+    if (diff === 1) state.stats.streak++;
+    else if (diff <= 3 && state.abilities.recovery > 30) {
+      addActivity('🛡️', `Recovery power saved your ${diff-1}-day gap! Streak continues!`);
+    } else {
+      state.stats.streak = 1;
+    }
+  }
+  state.stats.lastSessionDate = today;
+  saveState();
+}
+
+function addActivity(emoji, text, opts = {}) {
+  if (!state.stats.activityLog) state.stats.activityLog = [];
+  const now = new Date();
+  state.stats.activityLog.push({
+    emoji, text,
+    xp: opts.xp || 0,
+    problemId: opts.problemId,
+    time: `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`,
+    date: getDateKey(),
+  });
+  if (state.stats.activityLog.length > 100) state.stats.activityLog = state.stats.activityLog.slice(-100);
+  saveState();
+}
+
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// ===== TAB BAR =====
+document.getElementById('tabBar')?.addEventListener('click', function(e) {
+  const tab = e.target.closest('.tab-item');
+  if (!tab) return;
+  showScreen(tab.dataset.screen);
+});
+
+// ===== MODAL =====
+document.getElementById('modalOverlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function openModal(html) {
+  const modal = document.getElementById('modalOverlay');
+  document.getElementById('modalContent').innerHTML = html;
+  modal.classList.add('active');
+  document.body.classList.add('modal-open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.classList.remove('modal-open');
+}
+
+// ===== INIT =====
+function init() {
+  if (state.user.onboardingComplete) {
+    document.getElementById('tabBar').style.display = 'flex';
+    showScreen('dashboard');
+  } else {
+    showScreen('onboarding');
+  }
+  updateStatusBar();
+}
+
+init();
+console.log('🌟 readersedu.app Global B2C MVP v2.0');
+console.log('🐾 Pet Collection · 🏡 Thought Garden · ⚡ Daily Challenge');
+console.log('🌍 Design: English-first, i18n-ready, culturally neutral');
+</script>
+</body>
+</html>
